@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">DogeSan</string>
+    <string name="home_navigation">Home</string>
+    <string name="search_navigation">Search</string>
+    <string name="search">Search</string>
+    <string name="anime_name">One piece</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

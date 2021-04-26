@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:motion="http://schemas.android.com/apk/res-auto">
+
+    <ConstraintSet android:id="@+id/start">
+        <Constraint
+            android:layout_height="80dp"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:id="@+id/constraintLayout"
+            motion:layout_constraintBottom_toBottomOf="@+id/nestedScrollView"
+            android:layout_marginBottom="8dp" />
+        <Constraint
+            android:layout_height="0dp"
+            motion:layout_constraintTop_toTopOf="@+id/constraintLayout"
+            motion:layout_constraintBottom_toBottomOf="@+id/constraintLayout"
+            android:layout_width="100dp"
+            motion:layout_constraintStart_toStartOf="@+id/constraintLayout"
+            android:id="@+id/player_view" />
+        <Constraint
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            motion:layout_constraintBottom_toBottomOf="@id/constraintLayout"
+            android:alpha="0"
+            motion:layout_constraintRight_toRightOf="@id/constraintLayout"
+            motion:layout_constraintTop_toTopOf="@id/constraintLayout"
+            android:id="@+id/cancel_video"
+            android:layout_marginEnd="16dp" />
+        <Constraint
+            android:id="@+id/player_recycle_view"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            motion:layout_constraintTop_toBottomOf="@id/constraintLayout"
+            motion:layout_constraintStart_toStartOf="parent" />
+        <Constraint
+            android:id="@+id/player_recycle_view"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            motion:layout_constraintTop_toBottomOf="@id/constraintLayout"
+            motion:layout_constraintStart_toStartOf="parent" />
+
+
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/end">
+    </ConstraintSet>
+    <Transition
+        motion:constraintSetStart="@+id/end"
+        motion:constraintSetEnd="@+id/start" >
+        <OnSwipe
+            motion:touchAnchorId="@+id/player_recycle_view"
+            motion:touchRegionId="@id/constraintLayout"
+            motion:dragDirection="dragDown"
+            motion:touchAnchorSide="bottom" />
+    </Transition>
+</MotionScene>
