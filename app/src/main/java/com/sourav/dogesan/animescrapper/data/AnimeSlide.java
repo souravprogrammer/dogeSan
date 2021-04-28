@@ -1,6 +1,6 @@
 package com.company.scrapper.data;
 
-public class AnimeSlide extends AnimeList {
+public class AnimeSlide extends com.company.scrapper.data.AnimeList {
 
     private String gif_path ;
     public AnimeSlide(String title, String path, String gif_path) {

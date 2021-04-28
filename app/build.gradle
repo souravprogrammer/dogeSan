@@ -47,6 +47,6 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
     // multi dex library
     implementation 'androidx.multidex:multidex:2.0.1'
-
-
+    // image slider library
+    implementation 'com.github.smarteist:autoimageslider:1.4.0-appcompat'
 }

@@ -138,7 +138,7 @@ public class Anime {
 
     }
 
-    public List<AnimeSlide> getOngoingAnime() throws IOException {
+    public List<AnimeSlide> getOngoingAnime(Integer start , Integer end) throws IOException {
 
         List<AnimeSlide> list = new ArrayList<>();
         String title, img, path;
@@ -146,7 +146,11 @@ public class Anime {
         Elements elements = document.getElementsByClass("an-box loading");
 
         int size = elements.size();
-        for (int i = 0; i < size; i++) {
+
+        if(size>end){
+            size =end ;
+        }
+        for (int i = start; i < size; i++) {
             /**path of anime */
 
             path = elements.get(i).getElementsByClass("an-image")

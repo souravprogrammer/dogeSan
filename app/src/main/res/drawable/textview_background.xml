@@ -4,11 +4,16 @@
     <size
         android:width="100dp"
         android:height="50dp" />
-    <gradient
-        android:endColor="?attr/colorControlHighlight"
-        android:startColor="?attr/colorControlHighlight"
-        />
-    <corners android:radius="16dp" />
+<!--    <gradient-->
+<!--        android:endColor="?attr/colorControlHighlight"-->
+<!--        android:startColor="?attr/colorControlHighlight"-->
+<!--        />-->
 
+
+    <gradient android:startColor="@android:color/transparent"
+        android:angle="360"
+        android:endColor="#141414
+"/>
+    <corners android:radius="16dp" />
 
 </shape>

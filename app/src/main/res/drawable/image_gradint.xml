@@ -3,9 +3,9 @@
     android:shape="rectangle">
 
 
-    <gradient android:endColor="@color/black"
+    <gradient android:endColor="#333333"
         android:startColor="@android:color/transparent"
-
+        android:angle="270"
         />
 
 </shape>

@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
@@ -18,8 +19,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.sourav.dogesan.WatchAnime;
 import com.sourav.dogesan.utils.AnimeAsyncTaskLoader;
 import com.sourav.dogesan.utils.DogeViewModel;
@@ -129,7 +132,9 @@ public class SearchFragment extends Fragment implements LoaderManager.LoaderCall
                 }
             }
         });
-
+        ImageView img = view.findViewById(R.id.search_fragment_background);
+        //img.setImageResource(R.drawable.search_back);
+        Glide.with(getContext()).asGif().load(R.drawable.back) .into(img) ;
         getLoaderManager().initLoader(SEARCH_ANIME_LOADER_ID, null, this);
         return view;
     }

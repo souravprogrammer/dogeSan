@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -24,6 +25,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -46,15 +49,16 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
 import com.sourav.dogesan.utils.AnimeAsyncTaskLoader;
+import com.sourav.dogesan.utils.BlurTransformation;
 import com.sourav.dogesan.utils.DogeViewModel;
 import com.sourav.dogesan.utils.EpisodesRecycleAdapter;
 
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import static com.google.android.exoplayer2.Player.*;
-
 
 public class WatchAnime extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<String>>,
         EpisodesRecycleAdapter.OnClickedEpisodes {
@@ -66,8 +70,6 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
     private String path;
     private String video_path;
     private boolean playWhenReady = true;
-    private int currentWindow = 0;
-    private long playbackPosition = 0;
     private final PlaybackStateListener listner = new PlaybackStateListener();
     private ImageView fullscreen;
 
@@ -78,42 +80,79 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
-        getSupportLoaderManager().initLoader(WATCH_ANIME, null, this);
-        RecyclerView recyclerView = findViewById(R.id.recycle_view_watch_episodes);
+        RecyclerView recyclerView = findViewById(R.id.anime_recycle_view);
         episodesRecycleAdapter = new EpisodesRecycleAdapter();
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager L = new LinearLayoutManager(this);
+        L.setAutoMeasureEnabled(false);
+        recyclerView.setLayoutManager(L);
         recyclerView.setAdapter(episodesRecycleAdapter);
         episodesRecycleAdapter.setOnEpisodeClickListner(this);
         playerView = findViewById(R.id.player_view);
         fullscreen = findViewById(R.id.player_fullscreen);
 
+        Objects.requireNonNull(getSupportActionBar()).hide();
         fullscreen.setOnClickListener(v -> {
             if (DogeViewModel.isFullScreen()) {
-                fullscreen.setImageResource(R.drawable.exit_fullscreen);
-               // setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                FrameLayout frameLayout = findViewById(R.id.player_frame);
-                frameLayout.setVisibility(View.VISIBLE);
-                hideSystemUi();
                 DogeViewModel.setFullScreen(false);
-
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             } else {
-                FrameLayout frameLayout = findViewById(R.id.player_frame);
-                frameLayout.setVisibility(View.VISIBLE);
-                fullscreen.setImageResource(R.drawable.enter_full_screen);
-             //   setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                showSystemUi();
                 DogeViewModel.setFullScreen(true);
-
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             }
         });
-
+        getSupportLoaderManager().initLoader(WATCH_ANIME, null, this);
         if (savedInstanceState == null) {
             simpleExoPlayer = new SimpleExoPlayer.Builder(this).build();
         } else {
-            simpleExoPlayer = DogeViewModel.getSimpleExoPlayer();
-            playerView.setPlayer(simpleExoPlayer);
-        }
 
+            simpleExoPlayer = new SimpleExoPlayer.Builder(this).build();
+            playerView.setPlayer(simpleExoPlayer);
+            String s = DogeViewModel.uri;
+            MediaItem mediaItem = MediaItem.fromUri(s);
+            simpleExoPlayer.setMediaItem(mediaItem);
+            simpleExoPlayer.setPlayWhenReady(playWhenReady);
+
+            simpleExoPlayer.seekTo(DogeViewModel.currentwindo, DogeViewModel.currentposition);
+
+            simpleExoPlayer.addListener(listner);
+            simpleExoPlayer.prepare();
+
+            boolean state = DogeViewModel.isFullScreen();
+            ConstraintLayout frame = findViewById(R.id.anime_half_part);
+            frame.setVisibility(View.GONE);
+
+            if (state) {
+                //for full screen
+                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) playerView.getLayoutParams();
+                params.height = FrameLayout.LayoutParams.MATCH_PARENT;
+
+                playerView.setLayoutParams(params);
+                hideSystemUi();
+
+            } else {
+                //for potrate mode
+                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) playerView.getLayoutParams();
+
+                final float scale = getResources().getDisplayMetrics().density;
+                params.height = (int) (300 * scale + 0.5f);
+
+                playerView.setLayoutParams(params);
+                showSystemUi();
+            }
+        }
+    }
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (playerView.getPlayer() != null) {
+            DogeViewModel.currentwindo = playerView.getPlayer().getCurrentWindowIndex();
+            DogeViewModel.currentposition = (int) playerView.getPlayer().getCurrentPosition();
+            playerView.getPlayer().release();
+            simpleExoPlayer = null;
+            playerView.setPlayer(null);
+        }
     }
 
     private void hideSystemUi() {
@@ -124,13 +163,12 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
         getWindow().getDecorView().setSystemUiVisibility(Flag);
-        getSupportActionBar().hide();
+        //Objects.requireNonNull(getSupportActionBar()).hide();
     }
 
     private void showSystemUi() {
-
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-        getSupportActionBar().show();
+        // Objects.requireNonNull(getSupportActionBar()).show();
     }
 
     //Async Loader callbacks
@@ -142,16 +180,23 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
 
     @Override
     public void onLoadFinished(@NonNull Loader<List<String>> loader, List<String> data) {
+        //   com.company.scrapper.data.AnimeCard animeCard = DogeViewModel.getAnimeCard();
 
-        com.company.scrapper.data.AnimeCard animeCard = DogeViewModel.getAnimeCard();
-        if (animeCard != null) {
-            episodesRecycleAdapter.updateData(animeCard.getEpisodes());
-            TextView textView = findViewById(R.id.anime_title);
-            textView.setText(animeCard.getTitle());
-            textView = findViewById(R.id.anime_description);
-            textView.setText(animeCard.getDescription());
+        if (DogeViewModel.getAnimeCard() != null && !DogeViewModel.isFullScreen()) {
             ImageView image = findViewById(R.id.anime_image);
-            Glide.with(this).load(animeCard.getImg_path()).into(image);
+            ImageView blurimage = findViewById(R.id.anime_iamge_blur);
+
+            Glide.with(this).load(DogeViewModel.getAnimeCard().getImg_path())
+                    .apply(RequestOptions.bitmapTransform( new BlurTransformation(getApplicationContext())))
+                    .into(blurimage);
+
+            Glide.with(this).load(DogeViewModel.getAnimeCard().getImg_path()).into(image);
+
+            episodesRecycleAdapter.updateData(DogeViewModel.getAnimeCard().getEpisodes());
+            TextView textView = findViewById(R.id.anime_title);
+            textView.setText(DogeViewModel.getAnimeCard().getTitle());
+            textView = findViewById(R.id.anime_description);
+            textView.setText(DogeViewModel.getAnimeCard().getDescription());
         }
     }
 
@@ -163,41 +208,41 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
     // when episode get clicked
     @Override
     public void episodeClicked(String path) {
+        if (this.path != null) {
+            if (this.path.equals(path)) {
+                return;
+            }
+        }
         this.path = path;
         Toast.makeText(this, "click", Toast.LENGTH_SHORT).show();
         EpisodeStream stream = new EpisodeStream();
-        FrameLayout frameLayout = findViewById(R.id.player_frame);
-        frameLayout.setVisibility(View.VISIBLE);
         stream.execute("null");
-
-
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) playerView.getLayoutParams();
+        final float scale = getResources().getDisplayMetrics().density;
+        params.height = (int) (300 * scale + 0.5f);
+        playerView.setLayoutParams(params);
+        ConstraintLayout constraintLayout = findViewById(R.id.anime_half_part);
+        constraintLayout.setVisibility(View.GONE);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-     //   releasePlayer();
-
     }
 
     private void initlizePlayer(String uri) {
 
-        playerView.setPlayer(simpleExoPlayer);
-        MediaItem mediaItem = MediaItem.fromUri(uri);
-        simpleExoPlayer.setMediaItem(mediaItem);
-        simpleExoPlayer.setPlayWhenReady(playWhenReady);
-        // simpleExoPlayer.seekTo(currentWindow,playbackPosition);
-        simpleExoPlayer.addListener(listner);
-        simpleExoPlayer.prepare();
-        DogeViewModel.setSimpleExoPlayer(simpleExoPlayer);
+        if (simpleExoPlayer != null) {
+            playerView.setPlayer(simpleExoPlayer);
+            MediaItem mediaItem = MediaItem.fromUri(uri);
+            simpleExoPlayer.setMediaItem(mediaItem);
+            simpleExoPlayer.setPlayWhenReady(playWhenReady);
+            // simpleExoPlayer.seekTo(currentWindow,playbackPosition);
+            simpleExoPlayer.addListener(listner);
+            simpleExoPlayer.prepare();
+        }
     }
 
-    private void releasePlayer() {
-
-        //   simpleExoPlayer.pause();
-        simpleExoPlayer.stop();
-        simpleExoPlayer = null;
-    }
 
     private class EpisodeStream extends AsyncTask<String, Void, String> {
 
@@ -235,6 +280,9 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
                     Toast.makeText(getApplicationContext(), "buffering", Toast.LENGTH_SHORT).show();
                     break;
                 case ExoPlayer.STATE_READY:
+                    if (video_path != null) {
+                        DogeViewModel.uri = video_path;
+                    }
                     Toast.makeText(getApplicationContext(), "Ready", Toast.LENGTH_SHORT).show();
 
                     break;

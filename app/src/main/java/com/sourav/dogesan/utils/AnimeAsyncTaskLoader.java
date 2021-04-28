@@ -7,6 +7,7 @@ import androidx.loader.content.AsyncTaskLoader;
 
 import com.company.scrapper.Anime;
 import com.sourav.dogesan.WatchAnime;
+import com.sourav.dogesan.fragments.HomeFragment;
 import com.sourav.dogesan.fragments.SearchFragment;
 
 import java.io.IOException;
@@ -41,6 +42,7 @@ public class AnimeAsyncTaskLoader extends AsyncTaskLoader<List<String>> {
                 DogeViewModel.setAllAnimeList(Anime.createInstance().getAllAnime());
             }
         } else if (id == WatchAnime.WATCH_ANIME) {
+            if(DogeViewModel.getAnimeCard()==null) {
                 try {
                     com.company.scrapper.data.AnimeCard animeCard =
                             Anime.createInstance().getAnime(Extra_data);
@@ -48,6 +50,17 @@ public class AnimeAsyncTaskLoader extends AsyncTaskLoader<List<String>> {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            }
+        } else if (id == HomeFragment.HOME_LOADER){
+            if(DogeViewModel.getAnimeSlide() == null) {
+                try {
+                    List<com.company.scrapper.data.AnimeSlide> animeSlide = Anime.createInstance().Slide();
+                    DogeViewModel.setAnimeSlide(animeSlide);
+                    DogeViewModel.setOngoingAnime(Anime.createInstance().getOngoingAnime(0,30));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return null;
     }

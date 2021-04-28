@@ -9,16 +9,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DogeViewModel {
-
+    public static int currentwindo, currentposition;
+    public static String uri;
     private static List<com.company.scrapper.data.AnimeList> searchedAnime, allAnimeList = null;
-    private static com.company.scrapper.data.AnimeCard animeCard = null ;
-    private static com.company.scrapper.data.AnimeSlide animeSlide = null;
-    private static SimpleExoPlayer simpleExoPlayer ;
-    private static boolean FullScreen =false;
-
+    private static com.company.scrapper.data.AnimeCard animeCard = null;
+    private static List<com.company.scrapper.data.AnimeSlide> animeSlide = null;
+    private static boolean FullScreen = false;
+    private static List<AnimeSlide> ongoingAnime ;
     // getters
-    public static SimpleExoPlayer getSimpleExoPlayer(){
-        return simpleExoPlayer ;
+//    public static SimpleExoPlayer getSimpleExoPlayer(){
+//        return simpleExoPlayer ;
+//    }
+
+    public static void setOngoingAnime( List<AnimeSlide> s){
+        ongoingAnime = s ;
+    }
+    public static List<AnimeSlide> getOngoingAnime(){
+        return ongoingAnime ;
     }
 
     public static List<AnimeList> getSearchedAnime(String name) {
@@ -48,7 +55,7 @@ public class DogeViewModel {
         return animeCard;
     }
 
-    public static AnimeSlide getAnimeSlide() {
+    public static List<AnimeSlide> getAnimeSlide() {
         return animeSlide;
     }
 
@@ -66,17 +73,18 @@ public class DogeViewModel {
         DogeViewModel.animeCard = animeCard;
     }
 
-    public static void setAnimeSlide(AnimeSlide animeSlide) {
+    public static void setAnimeSlide(List<AnimeSlide> animeSlide) {
         DogeViewModel.animeSlide = animeSlide;
     }
 
-    public static void setSimpleExoPlayer(SimpleExoPlayer simpleExoPlayer){
-       DogeViewModel.simpleExoPlayer = simpleExoPlayer ;
+    //    public static void setSimpleExoPlayer(SimpleExoPlayer simpleExoPlayer){
+//       DogeViewModel.simpleExoPlayer = simpleExoPlayer ;
+//    }
+    public static boolean isFullScreen() {
+        return FullScreen;
     }
-    public static boolean isFullScreen(){
-        return FullScreen ;
-    }
-    public static void setFullScreen(boolean b){
-        FullScreen = b ;
+
+    public static void setFullScreen(boolean b) {
+        FullScreen = b;
     }
 }
