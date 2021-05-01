@@ -1,6 +1,7 @@
 package com.sourav.dogesan;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.pm.ActivityInfo;
@@ -27,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.request.RequestOptions;
+import com.company.scrapper.data.AnimeSlide;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -48,15 +50,24 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.sourav.dogesan.utils.AnimeAsyncTaskLoader;
 import com.sourav.dogesan.utils.BlurTransformation;
 import com.sourav.dogesan.utils.DogeViewModel;
 import com.sourav.dogesan.utils.EpisodesRecycleAdapter;
+import com.sourav.dogesan.utils.FirebaseContract;
+import com.sourav.dogesan.utils.MyAnimeList;
 
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+
+import javax.xml.transform.sax.SAXResult;
 
 import static com.google.android.exoplayer2.Player.*;
 
@@ -64,6 +75,9 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
         EpisodesRecycleAdapter.OnClickedEpisodes {
     public final static String EXTRA_KEY_ANIME = "myanime";
     public static final int WATCH_ANIME = 13;
+    private boolean bookmarkState = true;
+    private int position = -1;
+    private static String animeUid;
     private EpisodesRecycleAdapter episodesRecycleAdapter;
     private SimpleExoPlayer simpleExoPlayer;
     private PlayerView playerView;
@@ -72,6 +86,9 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
     private boolean playWhenReady = true;
     private final PlaybackStateListener listner = new PlaybackStateListener();
     private ImageView fullscreen;
+    private String pagePath;
+    private DatabaseReference bookmark;
+    // private DatabaseReference bookmarkCheakReferance ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +96,13 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
         setContentView(R.layout.activity_watch_anime);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+        bookmark = FirebaseDatabase.getInstance()
+                .getReference(FirebaseContract.USER)
+                .child(DogeViewModel.USER_UID)
+                .child(FirebaseContract.MY_LIST);
+
+        pagePath = getIntent().getStringExtra(EXTRA_KEY_ANIME);
+        setBookmarkState();
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         RecyclerView recyclerView = findViewById(R.id.anime_recycle_view);
         episodesRecycleAdapter = new EpisodesRecycleAdapter();
@@ -105,17 +129,18 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
             simpleExoPlayer = new SimpleExoPlayer.Builder(this).build();
         } else {
 
-            simpleExoPlayer = new SimpleExoPlayer.Builder(this).build();
-            playerView.setPlayer(simpleExoPlayer);
+           // simpleExoPlayer = new SimpleExoPlayer.Builder(this).build();
+         //   playerView.setPlayer(simpleExoPlayer);
+            playerView.setPlayer(DogeViewModel.getPlayer());
             String s = DogeViewModel.uri;
-            MediaItem mediaItem = MediaItem.fromUri(s);
-            simpleExoPlayer.setMediaItem(mediaItem);
-            simpleExoPlayer.setPlayWhenReady(playWhenReady);
+         //   MediaItem mediaItem = MediaItem.fromUri(s);
+          //  simpleExoPlayer.setMediaItem(mediaItem);
+         //   simpleExoPlayer.setPlayWhenReady(playWhenReady);
 
-            simpleExoPlayer.seekTo(DogeViewModel.currentwindo, DogeViewModel.currentposition);
+           // simpleExoPlayer.seekTo(DogeViewModel.currentwindo, DogeViewModel.currentposition);
 
-            simpleExoPlayer.addListener(listner);
-            simpleExoPlayer.prepare();
+           // simpleExoPlayer.addListener(listner);
+          // simpleExoPlayer.prepare();
 
             boolean state = DogeViewModel.isFullScreen();
             ConstraintLayout frame = findViewById(R.id.anime_half_part);
@@ -142,17 +167,59 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
         }
     }
 
+    private void setBookmarkState() {
+        List<MyAnimeList> buffer = DogeViewModel.getMyAnimeList();
+        ImageView imageView = findViewById(R.id.bookmark);
+        int size = buffer.size();
+        for (int i = 0; i < size; i++) {
+            if (buffer.get(i).getPath().equals(this.pagePath)) {
+                bookmarkState = false;
+                animeUid = buffer.get(i).getUID();
+                position = i;
+                break;
+            }
+        }
+        if (bookmarkState) {
+            imageView.setImageResource(R.drawable.bookmark_add_24);
 
+        } else {
+            imageView.setImageResource(R.drawable.bookmark_added_24);
+
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(DogeViewModel.isFullScreen()){
+            Toast.makeText(getApplicationContext(),"First Exit FullScreen Mode",Toast.LENGTH_SHORT).show();
+        }else {
+            super.onBackPressed();
+            if(playerView!=null){
+                if(playerView.getPlayer()!=null){
+                    playerView.getPlayer().release();
+                    playerView.setPlayer(null);
+                    DogeViewModel.setPlayer(null);
+                }
+            }
+        }
+    }
+    
     @Override
     protected void onStop() {
         super.onStop();
-        if (playerView.getPlayer() != null) {
-            DogeViewModel.currentwindo = playerView.getPlayer().getCurrentWindowIndex();
-            DogeViewModel.currentposition = (int) playerView.getPlayer().getCurrentPosition();
-            playerView.getPlayer().release();
-            simpleExoPlayer = null;
-            playerView.setPlayer(null);
+        if (playerView != null){
+          if ( playerView.getPlayer() !=null){
+              DogeViewModel.setPlayer(playerView.getPlayer());
+          }
         }
+
+//        if (playerView.getPlayer() != null) {
+//            DogeViewModel.currentwindo = playerView.getPlayer().getCurrentWindowIndex();
+//            DogeViewModel.currentposition = (int) playerView.getPlayer().getCurrentPosition();
+//            playerView.getPlayer().release();
+//            simpleExoPlayer = null;
+//            playerView.setPlayer(null);
+//        }
     }
 
     private void hideSystemUi() {
@@ -187,7 +254,7 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
             ImageView blurimage = findViewById(R.id.anime_iamge_blur);
 
             Glide.with(this).load(DogeViewModel.getAnimeCard().getImg_path())
-                    .apply(RequestOptions.bitmapTransform( new BlurTransformation(getApplicationContext())))
+                    .apply(RequestOptions.bitmapTransform(new BlurTransformation(getApplicationContext())))
                     .into(blurimage);
 
             Glide.with(this).load(DogeViewModel.getAnimeCard().getImg_path()).into(image);
@@ -197,6 +264,34 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
             textView.setText(DogeViewModel.getAnimeCard().getTitle());
             textView = findViewById(R.id.anime_description);
             textView.setText(DogeViewModel.getAnimeCard().getDescription());
+
+            ImageView bookmarkImage = findViewById(R.id.bookmark);
+            // on bookmark click listener
+            bookmarkImage.setOnClickListener(v -> {
+                if (bookmarkState) {
+                    // adding to bookmark
+                    MyAnimeList an = new MyAnimeList(DogeViewModel.getAnimeCard().getTitle(),
+                            pagePath,
+                            DogeViewModel.getAnimeCard().getImg_path(),
+                            "null");
+                    //TODO bookmark thing
+                    bookmark.push().setValue(an);
+                    Toast.makeText(getApplicationContext(), "bookmarked", Toast.LENGTH_SHORT).show();
+                    bookmarkImage.setImageResource(R.drawable.bookmark_added_24);
+                    bookmarkState = false;
+                } else {
+                    // removing from bookmark
+                    bookmarkImage.setImageResource(R.drawable.bookmark_add_24);
+                    bookmark.child(animeUid).removeValue(new DatabaseReference.CompletionListener() {
+                        @Override
+                        public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                            DogeViewModel.getMyAnimeList().remove(position);
+                            Toast.makeText(getApplicationContext(), "UnbookMarked", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    bookmarkState = true;
+                }
+            });
         }
     }
 
@@ -205,7 +300,7 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
 
     }
 
-    // when episode get clicked
+    // TODO when episode get clicked
     @Override
     public void episodeClicked(String path) {
         if (this.path != null) {
@@ -232,6 +327,7 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
 
     private void initlizePlayer(String uri) {
 
+        // TODO I found the bug that causing to reinitialize the player after rotation is here { simpleexoplayer is null after rotation as i thought}
         if (simpleExoPlayer != null) {
             playerView.setPlayer(simpleExoPlayer);
             MediaItem mediaItem = MediaItem.fromUri(uri);

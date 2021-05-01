@@ -3,6 +3,11 @@ package com.company.scrapper.data;
 public class AnimeSlide extends com.company.scrapper.data.AnimeList {
 
     private String gif_path ;
+
+    public AnimeSlide(){
+        super();
+    }
+
     public AnimeSlide(String title, String path, String gif_path) {
         super(title, path);
         this.gif_path = gif_path ;

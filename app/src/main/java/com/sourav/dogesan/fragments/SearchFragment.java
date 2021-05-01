@@ -132,9 +132,9 @@ public class SearchFragment extends Fragment implements LoaderManager.LoaderCall
                 }
             }
         });
-        ImageView img = view.findViewById(R.id.search_fragment_background);
-        //img.setImageResource(R.drawable.search_back);
-        Glide.with(getContext()).asGif().load(R.drawable.back) .into(img) ;
+//        ImageView img = view.findViewById(R.id.search_fragment_background);
+//        //img.setImageResource(R.drawable.search_back);
+//        Glide.with(getContext()).asGif().load(R.drawable.back) .into(img) ;
         getLoaderManager().initLoader(SEARCH_ANIME_LOADER_ID, null, this);
         return view;
     }

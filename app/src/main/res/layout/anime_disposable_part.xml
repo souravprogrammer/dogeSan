@@ -4,9 +4,10 @@
 
 
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#333333">
+    android:background="#212121">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,24 +23,24 @@
             <ImageView
                 android:id="@+id/anime_iamge_blur"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="330dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/one_piece"
                 app:layout_constraintBottom_toBottomOf="@+id/anime_image"
                 app:layout_constraintTop_toTopOf="@id/anime_image" />
+
             <ImageView
                 android:id="@+id/anime_image"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="330dp"
                 android:src="@drawable/one_piece"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-
             <FrameLayout
                 android:layout_width="0dp"
-                android:layout_height="0dp"
+                android:layout_height="330dp"
                 android:background="@drawable/image_gradint"
                 app:layout_constraintBottom_toBottomOf="@id/anime_image"
                 app:layout_constraintEnd_toEndOf="@id/anime_image"
@@ -69,6 +70,15 @@
                 android:textColor="@color/white"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/anime_title" />
+
+            <ImageView
+                android:id="@+id/bookmark"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/bookmark_add_24"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/anime_title" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.recyclerview.widget.RecyclerView

@@ -4,6 +4,14 @@
     <string name="search_navigation">Search</string>
     <string name="search">Search</string>
     <string name="anime_name">One piece</string>
+    <string name="appname">Doge San</string>
+    <string name="password">password</string>
+    <string name="Email">Email</string>
+    <string name="register">Register</string>
+    <string name="register_buttion">Register</string>
+    <string name="login_bittion">login</string>
+    <string name="name">Name</string>
+    <string name="remove">remove</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

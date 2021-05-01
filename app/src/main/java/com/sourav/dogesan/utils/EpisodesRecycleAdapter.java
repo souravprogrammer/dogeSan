@@ -47,6 +47,7 @@ public class EpisodesRecycleAdapter extends RecyclerView.Adapter<EpisodesRecycle
 
     public void updateData(List<com.company.scrapper.data.Episodes> list) {
         this.list = new LinkedList<>(list);
+      //  this.list = list ;
         notifyDataSetChanged();
     }
 

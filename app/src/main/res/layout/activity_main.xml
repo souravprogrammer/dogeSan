@@ -19,7 +19,6 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         app:backgroundTint="#161616"
         app:itemTextColor="#83d002"
-        app:itemTextAppearanceActive="@color/black"
         app:itemIconTint="@color/white"
         app:itemRippleColor="#83d002"
         android:id="@+id/bottom_navigation"

@@ -3,29 +3,53 @@ package com.sourav.dogesan.utils;
 import com.company.scrapper.data.AnimeCard;
 import com.company.scrapper.data.AnimeList;
 import com.company.scrapper.data.AnimeSlide;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DogeViewModel {
+    public static String USER_UID;
+    public static boolean isregister = false;
     public static int currentwindo, currentposition;
+
     public static String uri;
+    private static Player player;
     private static List<com.company.scrapper.data.AnimeList> searchedAnime, allAnimeList = null;
     private static com.company.scrapper.data.AnimeCard animeCard = null;
     private static List<com.company.scrapper.data.AnimeSlide> animeSlide = null;
     private static boolean FullScreen = false;
-    private static List<AnimeSlide> ongoingAnime ;
-    // getters
-//    public static SimpleExoPlayer getSimpleExoPlayer(){
-//        return simpleExoPlayer ;
-//    }
+    private static List<AnimeSlide> ongoingAnime;
+    private static List<MyAnimeList> myAnimeList = new ArrayList<>();
 
-    public static void setOngoingAnime( List<AnimeSlide> s){
-        ongoingAnime = s ;
+
+    public static void setPlayer(Player p) {
+        player = p;
     }
-    public static List<AnimeSlide> getOngoingAnime(){
-        return ongoingAnime ;
+
+    public static Player getPlayer() {
+        return player;
+    }
+
+    public static void setMyAnimeList(List<MyAnimeList> list) {
+        myAnimeList = list;
+    }
+
+    public static void addMyAnimelist(MyAnimeList list) {
+        myAnimeList.add(list);
+    }
+
+    public static List<MyAnimeList> getMyAnimeList() {
+        return myAnimeList;
+    }
+
+    public static void setOngoingAnime(List<AnimeSlide> s) {
+        ongoingAnime = s;
+    }
+
+    public static List<AnimeSlide> getOngoingAnime() {
+        return ongoingAnime;
     }
 
     public static List<AnimeList> getSearchedAnime(String name) {

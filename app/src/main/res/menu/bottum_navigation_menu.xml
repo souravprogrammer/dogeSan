@@ -9,5 +9,9 @@
         android:title="@string/search_navigation"
         android:icon="@drawable/search_navigation_icon"
         />
+    <item android:id="@+id/mylist_navigation_button"
+        android:title="My List"
+        android:icon="@drawable/list_navigation_icon"
+        />
 
 </menu>

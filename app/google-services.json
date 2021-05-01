@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "936886530295",
+    "project_id": "doge-san",
+    "storage_bucket": "doge-san.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:936886530295:android:75d7f1c39f05188d64e3f2",
+        "android_client_info": {
+          "package_name": "com.sourav.dogesan"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "936886530295-s10bdkv23q9n7tq3eta37rghkdjnj1j1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeg2tgMqFi6f0z-7wig6gHe3e7wKb_IbI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "936886530295-s10bdkv23q9n7tq3eta37rghkdjnj1j1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
