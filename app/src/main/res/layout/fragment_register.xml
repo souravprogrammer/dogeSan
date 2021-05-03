@@ -71,6 +71,7 @@
         android:layout_marginTop="16dp"
         android:ems="10"
         android:hint="@string/name"
+        android:textColor="@color/white"
         android:inputType="textPersonName"
         android:textColorHint="#9E9E9E"
         app:layout_constraintEnd_toEndOf="@+id/emailfield_register"
@@ -79,6 +80,7 @@
 
     <ProgressBar
         android:id="@+id/progressBar_register"
+        android:theme="@style/progressBarBlue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"

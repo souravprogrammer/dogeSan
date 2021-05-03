@@ -47,6 +47,10 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.exoplayer2.ui.DefaultTimeBar
+        app:played_color="#83d002"
+        app:unplayed_color="#212121"
+        app:buffered_color="@color/white"
+        app:scrubber_color="#83d002"
         android:id="@+id/exo_progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -65,5 +69,6 @@
         android:src="@drawable/enter_full_screen"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

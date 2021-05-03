@@ -12,6 +12,13 @@
     <string name="login_bittion">login</string>
     <string name="name">Name</string>
     <string name="remove">remove</string>
+    <string name="logout">log out</string>
+    <string name="my_list">My List</string>
+    <string name="proflie">profile</string>
+    <string name="recommended">Recommended</string>
+    <string name="watchlist">Watch list</string>
+    <string name="empty">Empty</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="one_punch_man">One Punch Man</string>
 </resources>

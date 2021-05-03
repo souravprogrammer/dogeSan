@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,7 +42,8 @@ public class MyAnimeListFragment extends Fragment implements MyAnimeAdapter.OnRe
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
     private MyAnimeAdapter adapter;
-
+    private ImageView box ;
+    private TextView empty ;
     public MyAnimeListFragment() {
     }
 
@@ -48,8 +51,18 @@ public class MyAnimeListFragment extends Fragment implements MyAnimeAdapter.OnRe
     public void onResume() {
         super.onResume();
         adapter.add(DogeViewModel.getMyAnimeList());
+        setEmptyIcons();
     }
 
+    public void setEmptyIcons(){
+        if(adapter.getListSize()>0){
+            box.setVisibility(View.GONE);
+            empty.setVisibility(View.GONE);
+        }else{
+            box.setVisibility(View.VISIBLE);
+            empty.setVisibility(View.VISIBLE);
+        }
+    }
     @Override
     public void onPause() {
         super.onPause();
@@ -60,7 +73,8 @@ public class MyAnimeListFragment extends Fragment implements MyAnimeAdapter.OnRe
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_my_anime_list, container, false);
-
+        box = view.findViewById(R.id.box);
+        empty = view.findViewById(R.id.empty);
 
         // Initializing
         adapter = new MyAnimeAdapter();
@@ -70,8 +84,9 @@ public class MyAnimeListFragment extends Fragment implements MyAnimeAdapter.OnRe
         adapter.addOnitemClickListner(this);
         List<MyAnimeList> l = DogeViewModel.getMyAnimeList();
         adapter.add(l);
-
+        setEmptyIcons();
         recyclerView.setAdapter(adapter);
+
 
         return view;
     }
@@ -91,6 +106,7 @@ public class MyAnimeListFragment extends Fragment implements MyAnimeAdapter.OnRe
             public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
                 Toast.makeText(getContext(), "completly removed", Toast.LENGTH_SHORT).show();
                 adapter.remove(position);
+                setEmptyIcons();
             }
         });
     }

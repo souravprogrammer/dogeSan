@@ -62,7 +62,7 @@ public class DogeViewModel {
         }
         if (allAnimeList != null) {
             for (AnimeList animeName : allAnimeList) {
-                if (animeName.getTitle().toLowerCase().contains(name)) {
+                if (animeName.getTitle().toLowerCase().contains(name.toLowerCase())) {
                     result.add(new AnimeList(animeName.getTitle(), animeName.getPath()));
                 }
             }

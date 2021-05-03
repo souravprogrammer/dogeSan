@@ -49,7 +49,9 @@
 
             <TextView
                 android:id="@+id/anime_title"
-                android:layout_width="wrap_content"
+                android:layout_width="320dp"
+                android:maxLines="1"
+                android:ellipsize="end"
                 android:layout_height="wrap_content"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
@@ -82,6 +84,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.recyclerview.widget.RecyclerView
+            android:layout_marginTop="12dp"
             android:id="@+id/anime_recycle_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -40,6 +41,7 @@ public class SearchFragment extends Fragment implements LoaderManager.LoaderCall
         SearchRecycleAdapter.OnItemClickedListner {
 
     public static final int SEARCH_ANIME_LOADER_ID = 12;
+    private ProgressBar progressBar ;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -108,6 +110,7 @@ public class SearchFragment extends Fragment implements LoaderManager.LoaderCall
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_search, container, false);
+        progressBar =view.findViewById(R.id.search_fragment_progressbar);
         searchTextView = view.findViewById(R.id.search_box);
         recyclerView = view.findViewById(R.id.recycle_search_view);
         searchTextView.addTextChangedListener(watcher);
@@ -132,9 +135,6 @@ public class SearchFragment extends Fragment implements LoaderManager.LoaderCall
                 }
             }
         });
-//        ImageView img = view.findViewById(R.id.search_fragment_background);
-//        //img.setImageResource(R.drawable.search_back);
-//        Glide.with(getContext()).asGif().load(R.drawable.back) .into(img) ;
         getLoaderManager().initLoader(SEARCH_ANIME_LOADER_ID, null, this);
         return view;
     }
@@ -150,9 +150,11 @@ public class SearchFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onLoadFinished(@NonNull androidx.loader.content.Loader<List<String>> loader, List<String> data) {
         // use if condition if internet is not connected
-        Toast.makeText(getContext(), "onload", Toast.LENGTH_SHORT).show();
+       // Toast.makeText(getContext(), "onload", Toast.LENGTH_SHORT).show();
         searchRecycleAdapter.updateData(DogeViewModel.getSearchedAnime(searchTextView.getText().toString()));
         searchRecycleAdapter.setOnclickListner(this);
+        progressBar.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
     }
 
     @Override

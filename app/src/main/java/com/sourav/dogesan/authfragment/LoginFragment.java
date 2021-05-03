@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +39,7 @@ public class LoginFragment extends Fragment {
     private EditText email, password;
     private TextView register;
     private Button login_button;
+    private ProgressBar progressBar ;
 
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener listener = new FirebaseAuth.AuthStateListener() {
@@ -50,8 +52,8 @@ public class LoginFragment extends Fragment {
                 startActivity(intent);
                 Objects.requireNonNull(getActivity()).finish();
             } else {
-                Toast.makeText(getContext(), "not", Toast.LENGTH_LONG).show();
-
+             //   Toast.makeText(getContext(), "not", Toast.LENGTH_LONG).show();
+              // not log-in
             }
         }
     };
@@ -77,6 +79,7 @@ public class LoginFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_login, container, false);
+        progressBar =view.findViewById(R.id.login_progressbar);
         auth = FirebaseAuth.getInstance();
         email = view.findViewById(R.id.emailfield_register);
         password = view.findViewById(R.id.passwordfield_register);
@@ -112,7 +115,7 @@ public class LoginFragment extends Fragment {
             password.setText("");
             return;
         }
-
+        progressBar.setVisibility(View.VISIBLE);
         auth.signInWithEmailAndPassword(email_input, password_input).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -122,12 +125,16 @@ public class LoginFragment extends Fragment {
                     } // if user enters wrong email.
                     catch (FirebaseAuthWeakPasswordException weakPassword) {
                         email.setError("Invalid Email");
+                        progressBar.setVisibility(View.GONE);
+
                     }
                     // if user enters wrong password.
                     catch (FirebaseAuthInvalidCredentialsException malformedEmail) {
+                        progressBar.setVisibility(View.GONE);
 
                         password.setError("Wrong password");
                     } catch (Exception e) {
+                        progressBar.setVisibility(View.GONE);
 
                         email.setError("Invalid Email");
                         password.setError("Wrong password");

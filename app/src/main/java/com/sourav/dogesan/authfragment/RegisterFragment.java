@@ -1,5 +1,6 @@
 package com.sourav.dogesan.authfragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -19,14 +20,19 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.sourav.dogesan.MainActivity;
 import com.sourav.dogesan.R;
+import com.sourav.dogesan.SplashScreen;
 import com.sourav.dogesan.utils.FirebaseContract;
 import com.sourav.dogesan.utils.UserData;
+
+import java.util.Objects;
 
 
 public class RegisterFragment extends Fragment {
@@ -108,6 +114,10 @@ public class RegisterFragment extends Fragment {
             name.setError("Fill your name");
             return;
         }
+        if(password_input.length()<6){
+            password.setError("Length should be grater then 6 character");
+            return;
+        }
         register_user = new UserData(email_input, password_input, name_input);
         progressBar.setVisibility(View.VISIBLE);
         auth.createUserWithEmailAndPassword(email_input, password_input).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -119,7 +129,7 @@ public class RegisterFragment extends Fragment {
                         throw task.getException();
                     } catch (Exception e) {
                         progressBar.setVisibility(View.GONE);
-                        Toast.makeText(getContext(), "Email already exits", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Email already exits" +e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -203,9 +213,9 @@ public class RegisterFragment extends Fragment {
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
                                     progressBar.setVisibility(View.GONE);
-                                    Toast.makeText(getContext(), "you have been registered", Toast.LENGTH_SHORT).show();
-                                    //  getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_auth
-                                    //    , new LoginFragment()).commit();
+                                    Toast.makeText(getContext(), "you have been registered : Go to login Page", Toast.LENGTH_LONG).show();
+
+
                                 } else {
                                     Toast.makeText(getContext(), "Unable to register", Toast.LENGTH_SHORT).show();
 
@@ -214,7 +224,7 @@ public class RegisterFragment extends Fragment {
                         });
             } else {
                 // registration fail
-                Toast.makeText(getContext(), "Registration fail", Toast.LENGTH_LONG).show();
+            //    Toast.makeText(getContext(), "Registration fail", Toast.LENGTH_LONG).show();
 
             }
 

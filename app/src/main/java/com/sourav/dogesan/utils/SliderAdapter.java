@@ -5,9 +5,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.smarteist.autoimageslider.SliderView;
 import com.smarteist.autoimageslider.SliderViewAdapter;
 import com.sourav.dogesan.R;
 
@@ -17,6 +17,7 @@ import java.util.List;
 public class SliderAdapter extends SliderViewAdapter<SliderAdapter.ViewHolder> {
 
     private List<com.company.scrapper.data.AnimeSlide> list = new ArrayList<>();
+    private OnSlideClickListener slideClickListner;
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent) {
@@ -34,9 +35,15 @@ public class SliderAdapter extends SliderViewAdapter<SliderAdapter.ViewHolder> {
         viewHolder.setAnimeTitle(data.getTitle());
         Glide.with(viewHolder.view).asGif().load(data.getGif_path()).into(viewHolder.imageHolder);
 
+        viewHolder.itemView.setOnClickListener(click->{
+            assert slideClickListner!=null;
+            slideClickListner.OnSlideClicked(list.get(position).getPath());
+        });
+
     }
-    public void updateData(List<com.company.scrapper.data.AnimeSlide> slides){
-        this.list =slides ;
+
+    public void updateData(List<com.company.scrapper.data.AnimeSlide> slides) {
+        this.list = slides;
         notifyDataSetChanged();
     }
 
@@ -45,7 +52,11 @@ public class SliderAdapter extends SliderViewAdapter<SliderAdapter.ViewHolder> {
         return list.size();
     }
 
-    class ViewHolder extends SliderViewAdapter.ViewHolder {
+    public void addOnSlideClickListner(OnSlideClickListener listener) {
+        this.slideClickListner = listener;
+    }
+
+    class ViewHolder extends SliderViewAdapter.ViewHolder  {
         View view;
         private TextView animeTitle;
         ImageView imageHolder;
@@ -55,11 +66,16 @@ public class SliderAdapter extends SliderViewAdapter<SliderAdapter.ViewHolder> {
             imageHolder = itemView.findViewById(R.id.slideingImage);
             animeTitle = itemView.findViewById(R.id.anime_title_slideing);
             this.view = itemView;
-
         }
 
         public void setAnimeTitle(String title) {
             animeTitle.setText(title);
         }
+
+
+    }
+
+    public interface OnSlideClickListener {
+        void OnSlideClicked(String path);
     }
 }

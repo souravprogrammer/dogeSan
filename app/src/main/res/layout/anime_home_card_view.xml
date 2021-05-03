@@ -16,8 +16,9 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/img_hold"
-            android:layout_width="140dp"
-            android:layout_height="200dp"
+            android:layout_width="120dp"
+            android:layout_height="180dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             app:cardCornerRadius="6dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -26,8 +27,8 @@
 
             <ImageView
                 android:id="@+id/anime_iamge_card_view"
-                android:layout_width="140dp"
-                android:layout_height="200dp"
+                android:layout_width="120dp"
+                android:layout_height="180dp"
                 android:layout_marginEnd="16dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/punch" />

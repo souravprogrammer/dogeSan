@@ -5,20 +5,18 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.pm.ActivityInfo;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.widget.NestedScrollView;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,32 +24,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.request.RequestOptions;
-import com.company.scrapper.data.AnimeSlide;
-import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.extractor.ExtractorsFactory;
-import com.google.android.exoplayer2.source.ExtractorMediaSource;
-import com.google.android.exoplayer2.source.LoopingMediaSource;
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.hls.HlsMediaSource;
-import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.upstream.BandwidthMeter;
-import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
-import com.google.android.exoplayer2.util.MimeTypes;
-import com.google.android.exoplayer2.util.Util;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -67,10 +45,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
-import javax.xml.transform.sax.SAXResult;
-
-import static com.google.android.exoplayer2.Player.*;
-
 public class WatchAnime extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<String>>,
         EpisodesRecycleAdapter.OnClickedEpisodes {
     public final static String EXTRA_KEY_ANIME = "myanime";
@@ -79,12 +53,16 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
     private int position = -1;
     private static String animeUid;
     private EpisodesRecycleAdapter episodesRecycleAdapter;
-    private SimpleExoPlayer simpleExoPlayer;
+    private Player simpleExoPlayer;
     private PlayerView playerView;
     private String path;
+    private ProgressBar progressBar;
+    private ProgressBar playerProgressBar;
+    private NestedScrollView nestedScrollView;
     private String video_path;
     private boolean playWhenReady = true;
-    private final PlaybackStateListener listner = new PlaybackStateListener();
+    private final PlaybackStateListener listener = new PlaybackStateListener();
+    ;
     private ImageView fullscreen;
     private String pagePath;
     private DatabaseReference bookmark;
@@ -100,7 +78,10 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
                 .getReference(FirebaseContract.USER)
                 .child(DogeViewModel.USER_UID)
                 .child(FirebaseContract.MY_LIST);
+        progressBar = findViewById(R.id.watch_anime_progressbar);
+        playerProgressBar = findViewById(R.id.player_progressbar);
 
+        nestedScrollView = findViewById(R.id.watch_anime_nestedview);
         pagePath = getIntent().getStringExtra(EXTRA_KEY_ANIME);
         setBookmarkState();
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
@@ -129,18 +110,12 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
             simpleExoPlayer = new SimpleExoPlayer.Builder(this).build();
         } else {
 
-           // simpleExoPlayer = new SimpleExoPlayer.Builder(this).build();
-         //   playerView.setPlayer(simpleExoPlayer);
-            playerView.setPlayer(DogeViewModel.getPlayer());
+
+            simpleExoPlayer = DogeViewModel.getPlayer();
+            assert simpleExoPlayer != null;
+            playerView.setPlayer(simpleExoPlayer);
             String s = DogeViewModel.uri;
-         //   MediaItem mediaItem = MediaItem.fromUri(s);
-          //  simpleExoPlayer.setMediaItem(mediaItem);
-         //   simpleExoPlayer.setPlayWhenReady(playWhenReady);
 
-           // simpleExoPlayer.seekTo(DogeViewModel.currentwindo, DogeViewModel.currentposition);
-
-           // simpleExoPlayer.addListener(listner);
-          // simpleExoPlayer.prepare();
 
             boolean state = DogeViewModel.isFullScreen();
             ConstraintLayout frame = findViewById(R.id.anime_half_part);
@@ -148,9 +123,9 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
 
             if (state) {
                 //for full screen
+                progressBar.setVisibility(View.GONE);
                 FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) playerView.getLayoutParams();
                 params.height = FrameLayout.LayoutParams.MATCH_PARENT;
-
                 playerView.setLayoutParams(params);
                 hideSystemUi();
 
@@ -190,12 +165,12 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
 
     @Override
     public void onBackPressed() {
-        if(DogeViewModel.isFullScreen()){
-            Toast.makeText(getApplicationContext(),"First Exit FullScreen Mode",Toast.LENGTH_SHORT).show();
-        }else {
+        if (DogeViewModel.isFullScreen()) {
+            Toast.makeText(getApplicationContext(), "First Exit FullScreen Mode", Toast.LENGTH_SHORT).show();
+        } else {
             super.onBackPressed();
-            if(playerView!=null){
-                if(playerView.getPlayer()!=null){
+            if (playerView != null) {
+                if (playerView.getPlayer() != null) {
                     playerView.getPlayer().release();
                     playerView.setPlayer(null);
                     DogeViewModel.setPlayer(null);
@@ -203,24 +178,18 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
             }
         }
     }
-    
+
     @Override
     protected void onStop() {
         super.onStop();
-        if (playerView != null){
-          if ( playerView.getPlayer() !=null){
-              DogeViewModel.setPlayer(playerView.getPlayer());
-          }
+        if (playerView != null) {
+            if (playerView.getPlayer() != null) {
+                DogeViewModel.setPlayer(playerView.getPlayer());
+            }
         }
 
-//        if (playerView.getPlayer() != null) {
-//            DogeViewModel.currentwindo = playerView.getPlayer().getCurrentWindowIndex();
-//            DogeViewModel.currentposition = (int) playerView.getPlayer().getCurrentPosition();
-//            playerView.getPlayer().release();
-//            simpleExoPlayer = null;
-//            playerView.setPlayer(null);
-//        }
     }
+
 
     private void hideSystemUi() {
         int Flag = View.SYSTEM_UI_FLAG_LOW_PROFILE
@@ -230,12 +199,10 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
         getWindow().getDecorView().setSystemUiVisibility(Flag);
-        //Objects.requireNonNull(getSupportActionBar()).hide();
     }
 
     private void showSystemUi() {
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-        // Objects.requireNonNull(getSupportActionBar()).show();
     }
 
     //Async Loader callbacks
@@ -247,9 +214,10 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
 
     @Override
     public void onLoadFinished(@NonNull Loader<List<String>> loader, List<String> data) {
-        //   com.company.scrapper.data.AnimeCard animeCard = DogeViewModel.getAnimeCard();
 
         if (DogeViewModel.getAnimeCard() != null && !DogeViewModel.isFullScreen()) {
+            progressBar.setVisibility(View.GONE);
+            nestedScrollView.setVisibility(View.VISIBLE);
             ImageView image = findViewById(R.id.anime_image);
             ImageView blurimage = findViewById(R.id.anime_iamge_blur);
 
@@ -267,7 +235,8 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
 
             ImageView bookmarkImage = findViewById(R.id.bookmark);
             // on bookmark click listener
-            bookmarkImage.setOnClickListener(v -> {
+            bookmarkImage.setOnClickListener( v -> {
+                setBookmarkState();
                 if (bookmarkState) {
                     // adding to bookmark
                     MyAnimeList an = new MyAnimeList(DogeViewModel.getAnimeCard().getTitle(),
@@ -285,11 +254,13 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
                     bookmark.child(animeUid).removeValue(new DatabaseReference.CompletionListener() {
                         @Override
                         public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+
                             DogeViewModel.getMyAnimeList().remove(position);
+                            bookmarkState = true;
                             Toast.makeText(getApplicationContext(), "UnbookMarked", Toast.LENGTH_SHORT).show();
                         }
                     });
-                    bookmarkState = true;
+
                 }
             });
         }
@@ -318,6 +289,7 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
         playerView.setLayoutParams(params);
         ConstraintLayout constraintLayout = findViewById(R.id.anime_half_part);
         constraintLayout.setVisibility(View.GONE);
+        playerProgressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -328,13 +300,14 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
     private void initlizePlayer(String uri) {
 
         // TODO I found the bug that causing to reinitialize the player after rotation is here { simpleexoplayer is null after rotation as i thought}
+
         if (simpleExoPlayer != null) {
             playerView.setPlayer(simpleExoPlayer);
             MediaItem mediaItem = MediaItem.fromUri(uri);
             simpleExoPlayer.setMediaItem(mediaItem);
             simpleExoPlayer.setPlayWhenReady(playWhenReady);
-            // simpleExoPlayer.seekTo(currentWindow,playbackPosition);
-            simpleExoPlayer.addListener(listner);
+
+            simpleExoPlayer.addListener(listener);
             simpleExoPlayer.prepare();
         }
     }
@@ -367,26 +340,32 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
 
             switch (playbackState) {
                 case ExoPlayer.STATE_IDLE:
-                    if (server < 12) {
+                    if (server < 13) {
                         initlizePlayer(changeStream(video_path));
                     }
-                    Toast.makeText(getApplicationContext(), "IDLE", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), "IDLE", Toast.LENGTH_SHORT).show();
+                    playerProgressBar.setVisibility(View.VISIBLE);
                     break;
                 case ExoPlayer.STATE_BUFFERING:
-                    Toast.makeText(getApplicationContext(), "buffering", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), "buffering", Toast.LENGTH_SHORT).show();
+                    playerProgressBar.setVisibility(View.VISIBLE);
                     break;
                 case ExoPlayer.STATE_READY:
+                    playerView.setKeepScreenOn(true);
                     if (video_path != null) {
                         DogeViewModel.uri = video_path;
                     }
-                    Toast.makeText(getApplicationContext(), "Ready", Toast.LENGTH_SHORT).show();
+                    playerProgressBar.setVisibility(View.GONE);
+                    //Toast.makeText(getApplicationContext(), "Ready", Toast.LENGTH_SHORT).show();
 
                     break;
                 case ExoPlayer.STATE_ENDED:
-                    Toast.makeText(getApplicationContext(), "end", Toast.LENGTH_SHORT).show();
+                    playerView.setKeepScreenOn(false);
+                    playerProgressBar.setVisibility(View.GONE);
+                    // Toast.makeText(getApplicationContext(), "end", Toast.LENGTH_SHORT).show();
                     break;
                 default:
-                    Toast.makeText(getApplicationContext(), "UNknown", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), "UNknown", Toast.LENGTH_SHORT).show();
 
                     break;
             }
@@ -394,7 +373,7 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
         }
 
         private String changeStream(String stream) {
-//            http://st2.anime1.com/[HorribleSubs]%20One%20Piece%20-%2001%20[1080p]_a1.mp4?st=iV4Tl0SSKgMLUMm_MyegMg&e=1619384135
+
             String s = "st";
             String buffer;
             String c = "" + video_path.charAt(9);

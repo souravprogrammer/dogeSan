@@ -24,7 +24,9 @@
 <!--        android:background="@drawable/image_gradint"/>-->
     <!-- TODO: Update blank fragment layout -->
 
+
     <androidx.recyclerview.widget.RecyclerView
+        android:visibility="gone"
         android:id="@+id/recycle_search_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -37,7 +39,6 @@
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"
         android:autofillHints=""
         android:background="@drawable/textview_background"
         android:hint="@string/search"
@@ -46,7 +47,16 @@
         android:paddingEnd="8dp"
         android:textColor="#e0e0e0"
         android:textColorHint="#9e9e9e"
-        app:layout_constraintBottom_toTopOf="@+id/recycle_search_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/search_fragment_progressbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:theme="@style/progressBarBlue"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

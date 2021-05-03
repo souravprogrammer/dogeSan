@@ -38,7 +38,9 @@ public class MyAnimeAdapter extends RecyclerView.Adapter<MyAnimeAdapter.ViewHold
         holder.setTitle(card.getTitle());
 
     }
-
+    public int getListSize(){
+        return list.size();
+    }
    public void addOnitemClickListner(OnItemClickedlistner clickedlistner) {
         this.itemClickedlistner = clickedlistner;
     }

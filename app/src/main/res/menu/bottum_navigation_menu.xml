@@ -10,8 +10,11 @@
         android:icon="@drawable/search_navigation_icon"
         />
     <item android:id="@+id/mylist_navigation_button"
-        android:title="My List"
+        android:title="@string/my_list"
         android:icon="@drawable/list_navigation_icon"
         />
-
+    <item android:id="@+id/profile_navigation_buttion"
+        android:title="@string/proflie"
+        android:icon="@drawable/person_24"
+        />
 </menu>

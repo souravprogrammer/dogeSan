@@ -4,32 +4,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:background="#212121"
+    tools:context=".SplashScreen">
 
-    <FrameLayout
-        android:id="@+id/fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="289dp"
+        android:layout_height="294dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/dogesan"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-
-        android:enabled="false"
-        app:backgroundTint="#161616"
-        app:itemTextColor="#83d002"
-        app:itemIconTint="@color/white"
-        app:itemRippleColor="#83d002"
-        android:id="@+id/bottom_navigation"
-        android:layout_width="match_parent"
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@style/progressBarBlue"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:theme="@style/progressBarBlue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/bottum_navigation_menu" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

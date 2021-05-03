@@ -24,7 +24,7 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="24dp"
         android:ellipsize="end"
         android:maxLines="1"
         android:text="one piece"

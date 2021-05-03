@@ -28,16 +28,29 @@
         app:sliderScrollTimeInSec="3"
         app:sliderStartAutoCycle="true" />
 
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="@string/recommended"
+        android:textColor="#83d002"
+        app:layout_constraintTop_toBottomOf="@+id/imageSlider"
+        android:textSize="24sp"
+        />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/imageSlider">
+        app:layout_constraintTop_toBottomOf="@+id/textView2">
 
 
         <include
             layout="@layout/anime_prefrence_card"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="16dp" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

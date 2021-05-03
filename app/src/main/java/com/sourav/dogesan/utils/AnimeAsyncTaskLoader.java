@@ -35,7 +35,8 @@ public class AnimeAsyncTaskLoader extends AsyncTaskLoader<List<String>> {
     }
 
     @Override
-    public List<String> loadInBackground() {
+     public List<String> loadInBackground() {
+
 
         if (id == SearchFragment.SEARCH_ANIME_LOADER_ID) {
             if (DogeViewModel.isAllAnimeList()) {
@@ -64,4 +65,5 @@ public class AnimeAsyncTaskLoader extends AsyncTaskLoader<List<String>> {
         }
         return null;
     }
+
 }

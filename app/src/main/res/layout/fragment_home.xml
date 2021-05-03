@@ -5,16 +5,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#333333"
+    android:animateLayoutChanges="true"
     tools:context=".fragments.HomeFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
 
 <androidx.core.widget.NestedScrollView
+    android:id="@+id/home_view"
+    android:visibility="gone"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <include layout="@layout/home_layout"/>
 </androidx.core.widget.NestedScrollView>
+
+    <ProgressBar
+        android:id="@+id/home_frag_progressbar"
+        android:theme="@style/progressBarBlue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
