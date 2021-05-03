@@ -72,13 +72,13 @@ public class EpisodesRecycleAdapter extends RecyclerView.Adapter<EpisodesRecycle
         public void onClick(View v) {
             if (listner != null) {
 
-                    listner.episodeClicked(list.get(getAdapterPosition()).getPath());
+                    listner.episodeClicked(list.get(getAdapterPosition()).getPath(),list.get(getAdapterPosition()).getEpisodeNumber());
 
             }
         }
     }
 
    public interface OnClickedEpisodes {
-        void episodeClicked(String path) ;
+        void episodeClicked(String path,String title) ;
     }
 }

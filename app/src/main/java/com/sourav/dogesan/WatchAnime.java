@@ -120,7 +120,10 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
             boolean state = DogeViewModel.isFullScreen();
             ConstraintLayout frame = findViewById(R.id.anime_half_part);
             frame.setVisibility(View.GONE);
-
+            TextView player_title = findViewById(R.id.player_title);
+            if (DogeViewModel.player_title != null) {
+                player_title.setText(DogeViewModel.player_title);
+            }
             if (state) {
                 //for full screen
                 progressBar.setVisibility(View.GONE);
@@ -235,7 +238,7 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
 
             ImageView bookmarkImage = findViewById(R.id.bookmark);
             // on bookmark click listener
-            bookmarkImage.setOnClickListener( v -> {
+            bookmarkImage.setOnClickListener(v -> {
                 setBookmarkState();
                 if (bookmarkState) {
                     // adding to bookmark
@@ -273,14 +276,18 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
 
     // TODO when episode get clicked
     @Override
-    public void episodeClicked(String path) {
+    public void episodeClicked(String path, String episodeNumber) {
         if (this.path != null) {
             if (this.path.equals(path)) {
                 return;
             }
         }
+
+        TextView player_title = findViewById(R.id.player_title);
+        DogeViewModel.player_title = episodeNumber;
+        player_title.setText(episodeNumber);
         this.path = path;
-        Toast.makeText(this, "click", Toast.LENGTH_SHORT).show();
+        // Toast.makeText(this, "click", Toast.LENGTH_SHORT).show();
         EpisodeStream stream = new EpisodeStream();
         stream.execute("null");
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) playerView.getLayoutParams();

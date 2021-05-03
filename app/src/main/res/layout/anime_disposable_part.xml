@@ -49,13 +49,13 @@
 
             <TextView
                 android:id="@+id/anime_title"
-                android:layout_width="320dp"
+                android:layout_width="300dp"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:layout_height="wrap_content"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
-                android:text="One Piece"
+                tools:text="One Piece"
                 android:textColor="@color/white"
                 android:textSize="24sp"
                 app:layout_constraintBottom_toBottomOf="@id/anime_image"

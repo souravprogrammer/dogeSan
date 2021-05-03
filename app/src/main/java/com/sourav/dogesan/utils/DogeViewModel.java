@@ -12,8 +12,7 @@ import java.util.List;
 public class DogeViewModel {
     public static String USER_UID;
     public static boolean isregister = false;
-    public static int currentwindo, currentposition;
-
+    public static String player_title ;
     public static String uri;
     private static Player player;
     private static List<com.company.scrapper.data.AnimeList> searchedAnime, allAnimeList = null;
