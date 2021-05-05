@@ -9,9 +9,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,7 +66,6 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
     private String video_path;
     private boolean playWhenReady = true;
     private final PlaybackStateListener listener = new PlaybackStateListener();
-    ;
     private ImageView fullscreen;
     private String pagePath;
     private DatabaseReference bookmark;
@@ -94,6 +97,22 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
         episodesRecycleAdapter.setOnEpisodeClickListner(this);
         playerView = findViewById(R.id.player_view);
         fullscreen = findViewById(R.id.player_fullscreen);
+
+        Spinner spinner = findViewById(R.id.spinner);
+        ArrayAdapter<CharSequence> arrayAdapter = ArrayAdapter.createFromResource(this, R.array.language, R.layout.spinner_item);
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(arrayAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                DogeViewModel.sub = parent.getItemAtPosition(position).equals("sub");
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         Objects.requireNonNull(getSupportActionBar()).hide();
         fullscreen.setOnClickListener(v -> {
@@ -277,17 +296,20 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
     // TODO when episode get clicked
     @Override
     public void episodeClicked(String path, String episodeNumber) {
-        if (this.path != null) {
-            if (this.path.equals(path)) {
-                return;
-            }
+        String title_postfix;
+        TextView player_title = findViewById(R.id.player_title);
+        if (DogeViewModel.sub) {
+            title_postfix = " sub";
+        } else {
+            title_postfix = " dub";
         }
 
-        TextView player_title = findViewById(R.id.player_title);
-        DogeViewModel.player_title = episodeNumber;
-        player_title.setText(episodeNumber);
+        DogeViewModel.player_title = episodeNumber + title_postfix;
+
+        String b = episodeNumber + title_postfix;
+        player_title.setText(b);
         this.path = path;
-        // Toast.makeText(this, "click", Toast.LENGTH_SHORT).show();
+     //   Toast.makeText(this, "click" +DogeViewModel.sub, Toast.LENGTH_SHORT).show();
         EpisodeStream stream = new EpisodeStream();
         stream.execute("null");
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) playerView.getLayoutParams();
@@ -330,8 +352,13 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
 
         @Override
         protected String doInBackground(String... strings) {
+            //   return com.company.scrapper.Anime.getEpisodeStreamEngilsh(path);
             try {
-                return com.company.scrapper.Anime.getEpisodeStream(path);
+                if (DogeViewModel.sub) {
+                    return com.company.scrapper.Anime.getEpisodeStream(path);
+                } else {
+                    return com.company.scrapper.Anime.getEpisodeStreamEngilsh(path);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -350,11 +377,13 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
                     if (server < 13) {
                         initlizePlayer(changeStream(video_path));
                     }
-                    //Toast.makeText(getApplicationContext(), "IDLE", Toast.LENGTH_SHORT).show();
+                 //   Toast.makeText(getApplicationContext(), "IDLE", Toast.LENGTH_SHORT).show();
                     playerProgressBar.setVisibility(View.VISIBLE);
                     break;
                 case ExoPlayer.STATE_BUFFERING:
-                    //Toast.makeText(getApplicationContext(), "buffering", Toast.LENGTH_SHORT).show();
+                  //  Toast.makeText(getApplicationContext(), video_path, Toast.LENGTH_SHORT).show();
+
+                //    Toast.makeText(getApplicationContext(), "buffering", Toast.LENGTH_SHORT).show();
                     playerProgressBar.setVisibility(View.VISIBLE);
                     break;
                 case ExoPlayer.STATE_READY:
@@ -380,16 +409,24 @@ public class WatchAnime extends AppCompatActivity implements LoaderManager.Loade
         }
 
         private String changeStream(String stream) {
+            //todo 1 exception is here is solved
+            String buffer = "";
+            try {
+                String s = "st";
+                String c = "" + video_path.charAt(9);
+                if (video_path.charAt(10) == '0' || video_path.charAt(10) == '1') {
+                    c = c + video_path.charAt(10);
+                }
 
-            String s = "st";
-            String buffer;
-            String c = "" + video_path.charAt(9);
-            int x = Integer.valueOf(c);
-            x++;
-            server = x;
-            s = s + c;
-            buffer = video_path.replace(s, "st" + x);
-            video_path = buffer;
+                int x = Integer.valueOf(c);
+                x++;
+                server = x;
+                s = s + c;
+                buffer = video_path.replace(s, "st" + x);
+                video_path = buffer;
+            } catch (Exception ignore) {
+
+            }
             return buffer;
         }
     }

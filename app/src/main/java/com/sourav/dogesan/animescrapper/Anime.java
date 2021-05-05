@@ -57,7 +57,7 @@ public class Anime {
         } else {
 
             /** Not found stream link*/
-            return null;
+            return "";
         }
     }
 
@@ -76,9 +76,7 @@ public class Anime {
             }
 
         }
-//        if (list == null) {
-//            return null;
-//        }
+
         return (result.size() > 0) ? result : null;
     }
 
@@ -115,9 +113,9 @@ public class Anime {
         description = e.get(e.size() - 1).text();
         // image
         Elements im = document.getElementsByClass("anime");
-      //  img =
-           Elements ee =     im.get(im.size() - 1).getElementsByTag("img");
-           img = ee.get(ee.size()-1).attr("src") ;
+        //  img =
+        Elements ee = im.get(im.size() - 1).getElementsByTag("img");
+        img = ee.get(ee.size() - 1).attr("src");
 
         title = document.getElementsByClass("blue-main-title").get(1).text();
 
@@ -138,7 +136,7 @@ public class Anime {
 
     }
 
-    public List<AnimeSlide> getOngoingAnime(Integer start , Integer end) throws IOException {
+    public List<AnimeSlide> getOngoingAnime(Integer start, Integer end) throws IOException {
 
         List<AnimeSlide> list = new ArrayList<>();
         String title, img, path;
@@ -147,8 +145,8 @@ public class Anime {
 
         int size = elements.size();
 
-        if(size>end){
-            size =end ;
+        if (size > end) {
+            size = end;
         }
         for (int i = start; i < size; i++) {
             /**path of anime */
@@ -208,5 +206,30 @@ public class Anime {
         return slides.size() > 0 ? slides : null;
     }
 
+    // TODO added new method
+    public static String getEpisodeStreamEngilsh(String episode_path) {
+        try {
+            Document document = Jsoup.connect(episode_path).get();
+            Elements e = document.getElementsByClass("p-left-buttons").get(0).getElementsByTag("a");
+
+            int choose_english = e.size() >= 3 ? 3 : 2;
+
+            String buffer_url = Anime.getEpisodeStream(episode_path + "/" + choose_english);
+            if (buffer_url.contains("http://st")) {
+                return buffer_url;
+            } else {
+                choose_english = (choose_english == 3) ? 2 : 1;
+                buffer_url = Anime.getEpisodeStream(episode_path + "/" + choose_english);
+                if (buffer_url.contains("http://st")) {
+                    return buffer_url;
+                }
+                return Anime.getEpisodeStream(episode_path);
+            }
+            // return Anime.getEpisodeStream(e.get(choose_english).attr("href"));
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
+        return "";
+    }
 
 }

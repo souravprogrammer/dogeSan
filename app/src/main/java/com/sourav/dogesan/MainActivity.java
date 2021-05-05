@@ -113,6 +113,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        if(!DogeViewModel.sub){
+            DogeViewModel.sub =true ;
+        }
         if (DogeViewModel.isFullScreen()) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             DogeViewModel.setFullScreen(false);

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DogeViewModel {
+    public static boolean sub = true ;
     public static String USER_UID;
     public static boolean isregister = false;
     public static String player_title ;
